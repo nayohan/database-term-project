@@ -12,15 +12,15 @@ cur = hashtag_db.cursor(pymysql.cursors.DictCursor)
 
 app = Flask(__name__)
 @app.route('/')
-def main():
+def main(): #로그인 페이지
     return render_template('login.html')
 
 @app.route('/register')
-def register():
+def register(): #회원가입 페이지
     return render_template('register.html')
 
 @app.route('/register/do', methods=['POST'])
-def do_register():
+def do_register(): #회원가입 로직
     _id = request.form['id']
     _pw = request.form['pw']
     _username = request.form['username']
@@ -30,10 +30,22 @@ def do_register():
     return render_template('register_result.html', id=_id, pw=_pw, username=_username, email=_email)
 
 @app.route('/login', methods=['POST'])
-def login():
+def login(): #로그인 로직
     _id = request.form['id']
     _pw = request.form['pw']
-    return render_template('login_result.html', id=_id, pw=_pw)
+    cur.execute('select * from users where id=(%s)',_id)
+    rows = cur.fetchall()
+    _isId = False
+    _isLogin = False
+
+    print(rows)
+    if not rows:
+        return render_template('login_result.html', isId=_isId, isLogin=_isLogin)
+    if rows[0]['id']:
+        _isId = True
+        if _pw==rows[0]['password']:
+            _isLogin=True
+    return render_template('login_result.html', isId=_isId, isLogin=_isLogin)
 
 if __name__=='__main__':
     app.debug=True

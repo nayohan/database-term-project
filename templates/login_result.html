@@ -5,8 +5,16 @@
             로그인 정보
         </h1>
         <h2>
-            id : {{ id }} <br>
-            pw : {{ pw }}
+            {% if isId %}
+                {% if isLogin %}
+                    로그인 성공
+                {% else%}
+                    로그인 실패, 비밀번호 틀림
+                {% endif %}
+            {% else %}
+                로그인 실패, 아이디 없음
+            {% endif %}
+            
         </h2>
         <button type="button" onclick="location.href='/'">돌아가기</button>
         </form>
