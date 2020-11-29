@@ -9,6 +9,7 @@ USE HOTPLACE;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS restaurant;
 DROP TABLE IF EXISTS bookmark;
+DROP TABLE IF EXISTS review;
 
 CREATE TABLE users (
   id VARCHAR(50) PRIMARY KEY,
@@ -18,23 +19,24 @@ CREATE TABLE users (
 );
 
 CREATE TABLE restaurant (
-  restaurant_name VARCHAR(50),
-  content VARCHAR(200),
+  restaurant_name VARCHAR(50) PRIMARY,
   rating INTEGER NOT NULL,
   locates VARCHAR(50) NOT NULL,
   category VARCHAR(50) NOT NULL,
-  PRIMARY KEY(restaurant_name, content)
 );
 
-
-
-DROP TABLE IF EXISTS bookmark;
 CREATE TABLE bookmark (
   u_id VARCHAR(50),
   r_name VARCHAR(50),
   FOREIGN KEY (u_id) REFERENCES users(id),
   FOREIGN KEY (r_name) REFERENCES restaurant(restaurant_name),
   PRIMARY KEY (u_id, r_name)
+);
+
+CREATE TABLE review (
+  r_name VARCHAR(50) PRIMARY KEY,
+  content VARCHAR(200),
+  FOREIGN KEY (r_name) REFERENCES restaurant(restaurant_name)
 );
 
 

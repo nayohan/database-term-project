@@ -2,13 +2,13 @@ from flask import Flask, render_template, request
 import pymysql
 from cfg import setting
 
-hashtag_db = pymysql.connect(
+hotplace_db = pymysql.connect(
     user=setting.DB_CFG['user'],
     passwd=setting.DB_CFG['passwd'],
     host=setting.DB_CFG['host'],
     db=setting.DB_CFG['db'],
     charset=setting.DB_CFG['charset'])
-cur = hashtag_db.cursor(pymysql.cursors.DictCursor)
+cur = hotplace_db.cursor(pymysql.cursors.DictCursor)
 
 app = Flask(__name__)
 @app.route('/')
@@ -26,9 +26,10 @@ def do_register(): #회원가입 로직
     _username = request.form['username']
     _email = request.form['email']
     cur.execute('insert into users (id, password,username, email) values (%s, %s, %s, %s)', (_id, _pw, _username, _email))
-    hashtag_db.commit()
+    hotplace_db.commit()
     return render_template('register_result.html', id=_id, pw=_pw, username=_username, email=_email)
 
+cur.execute('')
 @app.route('/login', methods=['POST'])
 def login(): #로그인 로직
     _id = request.form['id']
@@ -39,12 +40,12 @@ def login(): #로그인 로직
     _isLogin = False
 
     print(rows)
-    if not rows:
-        return render_template('login_result.html', isId=_isId, isLogin=_isLogin)
-    if rows[0]['id']:
-        _isId = True
-        if _pw==rows[0]['password']:
-            _isLogin=True
+    if rows:
+        if rows[0]['id']:
+            _isId = True
+            if _pw==rows[0]['password']:
+                _isLogin=True
+                
     return render_template('login_result.html', isId=_isId, isLogin=_isLogin)
 
 if __name__=='__main__':
