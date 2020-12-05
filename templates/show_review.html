@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <br>
+        <form action='/review' method="GET">
+            Search : <input type="text" name="toSearch">
+            <input type="submit" value="검색">
+        </form>
+        <br>
+        <table border="1">
+            <th>음식점</th>
+            <th><a href="/query/order">별점</a></th>
+            <th>지역</th>
+            <th>분류</th>
+            <th>추가</th>
+
+            {% for row in rows %} 
+            <tr>
+                <td><a href ='/'>{{ row['restaurant_name']}}</a></td>
+                <td>{{ row['avg_rating']}}</td>
+                <td>{{ row['location']}} </td>
+                <td>{{ row['category']}} </td>
+                <td><a href="/">추가</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>
