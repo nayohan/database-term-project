@@ -1,15 +1,30 @@
 <!doctype HTML>
 <html>
+    <head>
+        <style>
+            body {margin:200px auto auto auto; text-align: center; justify-content: center;}
+        </style>
+    </head>
     <body>
         <h1>
-            회원가입
+            [회원가입]
         </h1>
+        <br>
         <form action="/register/do", method="POST">
             id : <input type="text" name="id"><br>
             pw : <input type="text" name="pw"><br>
             name : <input type="text" name="username"><br>
-            email : <input type="text" name="email"><br>
+            email : <input type="text" name="email"><br><br>
             <input type="submit" value="등록">
         </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>		
+                        alert('{{message}}')
+                    </script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </body>
 </html>

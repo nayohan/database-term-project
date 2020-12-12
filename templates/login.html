@@ -1,17 +1,35 @@
 
 <!doctype HTML>
 <html>
+    <head>
+        <style>
+            body {margin:200px auto auto auto; text-align: center; justify-content: center;}
+        </style>
+    </head>
     <body>
-        <h1>
-            Welcome to login World!
-        </h1>
-        <form action="/login", method="POST">
-            id : <input type="text" name="id"><br>
-            pw : <input type="text" name="pw"><br><br>
-            <button type="button" onclick="location.href='/register'">회원가입</button>
-            <input type="submit" value="로그인">
+        <div>
+            <h1>
+                The HotPlace World
+            </h1>
+        </div>
+        <br><br><br>
+        <div>
+            <form action="/login", method="POST">
+                id  :  <input type="text" name="id"><br>
+                pw : <input type="text" name="pw"><br><br>
+                <button float="left" type="button" onclick="location.href='/register'">회원가입</button>   
+                <input float="right" type="submit" value="로그인">
+            </form>
+        </div>
         </form>
-        
-        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>		
+                        alert('{{message}}')
+                    </script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </body>
 </html>
