@@ -11,19 +11,20 @@ hotplace_db = pymysql.connect(
 cur = hotplace_db.cursor(pymysql.cursors.DictCursor)
 
 app = Flask(__name__)
-@app.route('/review', methods=['GET'])
+@app.route('/restaurant', methods=['GET'])
 def show_review():
     _toSearch = request.args.get('toSearch', "")
 
     cur.execute("select * from restaurant where location like %s", ('%%%s%%' % _toSearch))
     rows = cur.fetchall()
     print(rows)
+
     if rows:
-        return render_template('show_review.html', rows=rows)
-    
-    return render_template('show_review.html')
+        return render_template('show_restaurant.html', rows=rows)
+    return render_template('show_restaurant.html')
 
 
 if __name__=='__main__':
     app.debug=True
     app.run(host='192.168.0.8', port=5000)
+    

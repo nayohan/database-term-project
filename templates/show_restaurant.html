@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .search_bar {position:  relative; float: left;}
+            .login_bar {position: relative; float: right;}
+            .data_tab {position: static; max-width: 100%; float: left;}
+        </style>
+    </head>
+    <body>
+        <div class="search_bar">
+            <form action='/restaurant' method="GET">
+                Search : <input type="text" name="toSearch">
+                <input type="submit" value="검색">
+            </form>
+        </div>
+        <div class="login_bar">
+            <a href="/bookmark">북마크바</a>
+        </div>
+        <br>
+        <br>
+        <div class="data_tab">
+            <table border="1">
+                <th>음식점</th>
+                <th><a href="/query/order">별점</a></th>
+                <th>지역</th>
+                <th>분류</th>
+                <th>추가</th>
+    
+                {% for row in rows %} 
+                <tr>
+                    <td><a href ='/'>{{ row['restaurant_name']}}</a></td>
+                    <td>{{ row['avg_rating']}}</td>
+                    <td>{{ row['location']}} </td>
+                    <td>{{ row['category']}} </td>
+                    <td><a href="/">추가</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </body>
+</html>
