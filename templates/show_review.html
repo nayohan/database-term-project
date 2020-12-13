@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .search_bar {position:  relative; float: left;}
+            .login_bar {position: relative; float: right;}
+            .data_tab {position: static; max-width: 100%; float: left;}
+        </style>
+    </head>
+    <body>
+        <div class="search_bar">
+            <form action='/add_bookmark' method="GET">
+                <input  name="bookmark" value="{{ rows[0]['r_name'] }}">
+                <button type="submit">즐겨찾기 추가</button>
+                <button type="button" onclick="location.href='/restaurant'">뒤로가기</a>                
+            </form>
+        </div>
+        
+        <div class="login_bar">
+            <a href="/logout">로그아웃</a>
+        </div>
+        <br>
+        <br>
+        <div class="data_tab">
+            <table border="1">
+                <th>음식점</th>
+                <th>별점</th>
+                <th>리뷰</th>
+
+                {% for row in rows %} 
+                <tr>
+                    <td>{{ row['r_name']}}</a></td>
+                    <td>{{ row['rating']}}</td>
+                    <td>{{ row['content']}} </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>
+                        alert('{{message}}')
+                    </script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </body>
+</html>

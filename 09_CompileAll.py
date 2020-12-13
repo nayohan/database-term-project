@@ -84,11 +84,30 @@ def show_mypage(): # 즐겨찾기,리뷰삭제,회원탈퇴
         return render_template('show_mypage.html')
 
 
-@app.route('/review')
-def show_review(): # 리뷰보기
+@app.route('/review/<r_name>')
+def show_review(r_name): # 리뷰보기
     if 'loggedin' in session:
-        return render_template('show_review.html')
+        cur.execute("SELECT * FROM review WHERE  r_name=%s", r_name)
+        review = cur.fetchall() 
+        return render_template('show_review.html', rows=review)
 
+@app.route('/add_bookmark', methods=['GET'])
+def add_bookmark(): # 즐겨찾기추가후 리뷰보기
+    if 'loggedin' in session:
+        add_bookmark = request.args.get('bookmark', "")
+        cur.execute("SELECT * FROM review WHERE  r_name=%s", add_bookmark)
+        review = cur.fetchall()
+
+        # 북마크 추가
+        cur.execute('SELECT * FROM bookmark WHERE u_id=%s AND r_name=%s', (session['id'], add_bookmark))
+        isBookmarked = cur.fetchone()
+        if isBookmarked:
+            flash("Already Bookmarked")
+        else:
+            cur.execute("INSERT INTO bookmark (u_id, r_name) VALUES (%s, %s)",(session['id'], add_bookmark))
+            hotplace_db.commit()
+        return render_template('show_review.html', rows=review)
+    
 
 @app.route('/add_review')
 def  add_review(): # 리뷰
