@@ -15,21 +15,22 @@
             </form>
         </div>
         <div class="login_bar">
-            <a href="/bookmark">북마크바</a>
+            <a href="/mypage">즐겨찾기/리뷰관리</a> 
+            <a href="/logout">로그아웃</a>
         </div>
         <br>
         <br>
         <div class="data_tab">
             <table border="1">
                 <th>음식점</th>
-                <th><a href="/query/order">별점</a></th>
+                <th>별점</a></th>
                 <th>지역</th>
                 <th>분류</th>
-                <th>추가</th>
+                <th>리뷰</th>
     
                 {% for row in rows %} 
                 <tr>
-                    <td><a href ='/'>{{ row['restaurant_name']}}</a></td>
+                    <td><a href ='/review'>{{ row['restaurant_name']}}</a></td>
                     <td>{{ row['avg_rating']}}</td>
                     <td>{{ row['location']}} </td>
                     <td>{{ row['category']}} </td>
@@ -38,5 +39,15 @@
                 {% endfor %}
             </table>
         </div>
+        <!-- 로그인알람 -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <script>		
+                    alert('{{message}}')
+                </script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     </body>
 </html>

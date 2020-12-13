@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, url_for
+from flask import Flask, render_template, redirect, request, flash, url_for, session
 import pymysql
 from cfg import setting
 
@@ -11,8 +11,7 @@ hotplace_db = pymysql.connect(
 cur = hotplace_db.cursor(pymysql.cursors.DictCursor)
 
 app = Flask(__name__)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-_isLogin = False
+app.secret_key = 'ThisIsSomethingSpecial'
 
 @app.route('/')
 def main(): #로그인 페이지
@@ -28,7 +27,7 @@ def do_register(): #회원가입 로직
     _pw = request.form['pw']
     _username = request.form['username']
     _email = request.form['email']
-    cur.execute('select * from users where id=(%s)',_id)
+    cur.execute('SELECT * FROM users WHERE id=(%s)',_id)
     _isAlreadyUse = cur.fetchall()
     #print(_isAlreadyUse)
     if (_isAlreadyUse):
@@ -36,56 +35,67 @@ def do_register(): #회원가입 로직
         flash('id is alreday in use.')
         return render_template('register.html')
     
-    cur.execute('insert into users (id, password,username, email) values (%s, %s, %s, %s)', (_id, _pw, _username, _email))
+    cur.execute('INSERT INTO users (id, password,username, email) VALUES (%s, %s, %s, %s)', (_id, _pw, _username, _email))
     hotplace_db.commit()
     return render_template('register_result.html', id=_id, pw=_pw, username=_username, email=_email)
 
 @app.route('/login', methods=['POST'])
-def login(): #로그인 로직
+def login(): #로그인
     _id = request.form['id']
     _pw = request.form['pw']
-    cur.execute('select * from users where id=(%s)',_id)
-    rows = cur.fetchall()
-    #print(rows)
+    cur.execute('SELECT * FROM users WHERE id=%s AND password = %s', (_id, _pw))
+    account = cur.fetchone()
+    print(account)
 
-    if rows:
-        if rows[0]['id']:
-            if _pw==rows[0]['password']:
-                flash('login Success')
-                _isLogin = True
-                return url_for('/restaurant')
-            else:
-                flash('login Failed, password wrong.')
-        else:
-            flash('login Failed, id is not available')
+    if account:
+        session['loggedin'] = True
+        session['id'] = account['id']
+        session['username'] = account['username']
+        flash('login Success')
+        return redirect(url_for('show_restaurant'))
+    else:
+        flash('login Failed, Check id and passwrod')
+        return render_template('login.html')
+
+@app.route('/logout')
+def logout(): #로그아웃
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    session.pop('username', None)
+    print(session)
     return render_template('login.html')
-
 
 @app.route('/restaurant', methods=['GET'])
 def show_restaurant(): # 음식점 검색
-    _toSearch = request.args.get('toSearch', "")
-    cur.execute("select * from restaurant where location like %s", ('%%%s%%' % _toSearch))
-    rows = cur.fetchall()
-    print(rows)
-
-    if rows:
+    if 'loggedin' in session:
+        print(session)
+        _toSearch = request.args.get('toSearch', "")
+        cur.execute("SELECT * FROM restaurant WHERE location LIKE %s ORDER BY avg_rating DESC, restaurant_name", ('%%%s%%' % _toSearch))
+        rows = cur.fetchall()
         return render_template('show_restaurant.html', rows=rows)
-    return render_template('show_restaurant.html')
+    else:
+        flash('You need login first.')
+        return render_template('login.html')
+
 
 @app.route('/mypage')
 def show_mypage(): # 즐겨찾기,리뷰삭제,회원탈퇴
-    return render_template('show_mypage.html')
+    if 'loggedin' in session:
+        return render_template('show_mypage.html')
 
 
 @app.route('/review')
 def show_review(): # 리뷰보기
-    return render_template('show_review.html')
+    if 'loggedin' in session:
+        return render_template('show_review.html')
+
 
 @app.route('/add_review')
 def  add_review(): # 리뷰
-    return render_template('add_review.html')
+    if 'loggedin' in session:
+        return render_template('add_review.html')
+
 
 if __name__=='__main__':
     app.debug=True
     app.run(host='192.168.0.8', port=5000)
-    
