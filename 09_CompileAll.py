@@ -109,11 +109,20 @@ def add_bookmark(): # 즐겨찾기추가후 리뷰보기
         return render_template('show_review.html', rows=review)
     
 
-@app.route('/add_review')
-def  add_review(): # 리뷰
+@app.route('/add_review/<r_name>')
+def add_review(r_name): # 리뷰
     if 'loggedin' in session:
-        return render_template('add_review.html')
+        return render_template('add_review.html', rows=r_name)
 
+@app.route('/save_review', methods=['GET'])
+def save_review():
+    _r_name = request.args.get('r_name', "")
+    _rating = request.args.get('rating', "")
+    _content = request.args.get('review_content', "")
+
+    # 리뷰추가
+    cur.execute("INSERT INTO review (r_name, rating, content) VALUES (%s, %s, %s)", (_r_name, _rating, _content))
+    return redirect(url_for('show_review', r_name=_r_name))
 
 if __name__=='__main__':
     app.debug=True

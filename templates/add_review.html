@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {margin:200px auto auto auto; text-align: center; justify-content: center;}
+            .search_bar {position:  relative; float: left;}
+            .login_bar {position: relative; float: right;}
+            .data_tab {position: static; max-width: 100%; float: left;}
+        </style>
+    </head>
+    <body>
+        <div class="search_bar">
+            <a href="/restaurant">뒤로가기</a>
+        </div>
+        <div class="login_bar">
+            <a href="/logout">로그아웃</a>
+
+        </div>
+        <br>
+        <br>
+        <div>
+            <h1>{{ rows }}</h1>
+            <form action="/save_review" method="GET">
+                <input type="hidden" name="r_name" value="{{ rows }}">
+                별점 : <input style="width:600px; height:50px" type="text" name="rating" placeholder="Only num 1 to 5">
+                <br><br>
+                리뷰 : <input style="width:600px; height:200px" type="text" name="review_content">
+                <br><br>
+                <input type="submit" value="작성">
+            </form>
+    </body>
+</html>
