@@ -29,7 +29,7 @@ def do_register(): #회원가입 로직
     _email = request.form['email']
     cur.execute('SELECT * FROM users WHERE id=(%s)',_id)
     _isAlreadyUse = cur.fetchall()
-    #print(_isAlreadyUse)
+    
     if (_isAlreadyUse):
         print(1)
         flash('id is alreday in use.')
@@ -45,7 +45,6 @@ def login(): #로그인
     _pw = request.form['pw']
     cur.execute('SELECT * FROM users WHERE id=%s AND password =%s', (_id, _pw))
     account = cur.fetchone()
-    print(account)
 
     if account:
         session['loggedin'] = True
@@ -70,7 +69,7 @@ def show_restaurant(): # 음식점 검색
     if 'loggedin' in session:
         # _searchCategory = request.form['searchCategory']
         # _toSearch = request.form['toSearch']
-    
+
         _searchCategory = request.args.get('searchCategory')
         _toSearch = request.args.get('toSearch', "")
         print(_searchCategory) 
@@ -132,6 +131,7 @@ def save_review(): # 리뷰 저장
 @app.route('/mypage')
 def show_mypage(): # 내 즐겨찾기,리뷰,회원탈퇴 보기
     if 'loggedin' in session: # 레스토랑이름찾고, 다른테이블서 정보GET
+        #
         cur.execute("SELECT * FROM restaurant WHERE restaurant_name in (SELECT r_name FROM bookmark WHERE u_id=%s)", session['id'])
         mybookmark = cur.fetchall()
         cur.execute("SELECT * FROM review WHERE u_id=%s", session['id'])
@@ -154,6 +154,12 @@ def delete_bookmark(r_name): # 북마크 삭제
         hotplace_db.commit()
         return redirect(url_for('show_mypage'))
 
+@app.route('/delete_user')
+def delete_user():
+    if 'loggedin' in session:
+        cur.execute("DELETE FROM users where id=%s", session['id'])
+        hotplace_db.commit()
+        return redirect(url_for('logout'))
 
 if __name__=='__main__':
     app.debug=True
