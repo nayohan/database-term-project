@@ -10,7 +10,13 @@
     <body>
         <div class="search_bar">
             <form action='/restaurant' method="GET">
-                Search : <input type="text" name="toSearch">
+                <select name="searchCategory">
+                    <option selected hidden>선택</option>
+                    <option value="음식점">음식점</option>
+                    <option value="지역">지역</option>
+                    <option value="분류">분류</option>
+                </select>
+                <input type="text" name="toSearch">
                 <input type="submit" value="검색">
             </form>
         </div>

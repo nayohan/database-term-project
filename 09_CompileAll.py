@@ -43,7 +43,7 @@ def do_register(): #회원가입 로직
 def login(): #로그인
     _id = request.form['id']
     _pw = request.form['pw']
-    cur.execute('SELECT * FROM users WHERE id=%s AND password = %s', (_id, _pw))
+    cur.execute('SELECT * FROM users WHERE id=%s AND password =%s', (_id, _pw))
     account = cur.fetchone()
     print(account)
 
@@ -68,9 +68,21 @@ def logout(): #로그아웃
 @app.route('/restaurant', methods=['GET'])
 def show_restaurant(): # 음식점 검색
     if 'loggedin' in session:
-        print(session)
+        # _searchCategory = request.form['searchCategory']
+        # _toSearch = request.form['toSearch']
+    
+        _searchCategory = request.args.get('searchCategory')
         _toSearch = request.args.get('toSearch', "")
-        cur.execute("SELECT * FROM restaurant WHERE location LIKE %s ORDER BY avg_rating DESC, restaurant_name", ('%%%s%%' % _toSearch))
+        print(_searchCategory) 
+        print(_toSearch)
+        if _searchCategory == '음식점':
+            cur.execute("SELECT * FROM restaurant WHERE restaurant_name LIKE %s ORDER BY avg_rating DESC, restaurant_name", ('%%%s%%' % _toSearch))
+        elif _searchCategory == '지역':
+            cur.execute("SELECT * FROM restaurant WHERE location LIKE %s ORDER BY avg_rating DESC, restaurant_name", ('%%%s%%' % _toSearch))
+        elif _searchCategory == '분류':
+            cur.execute("SELECT * FROM restaurant WHERE category LIKE %s ORDER BY avg_rating DESC, restaurant_name", ('%%%s%%' % _toSearch))
+        else:
+            cur.execute("SELECT * FROM restaurant WHERE location LIKE %s ORDER BY avg_rating DESC, restaurant_name", ('%%%s%%' % _toSearch))
         rows = cur.fetchall()
         return render_template('show_restaurant.html', rows=rows)
     else:
