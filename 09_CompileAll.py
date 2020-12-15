@@ -77,13 +77,6 @@ def show_restaurant(): # 음식점 검색
         flash('You need login first.')
         return render_template('login.html')
 
-
-@app.route('/mypage')
-def show_mypage(): # 즐겨찾기,리뷰삭제,회원탈퇴
-    if 'loggedin' in session:
-        return render_template('show_mypage.html')
-
-
 @app.route('/review/<r_name>')
 def show_review(r_name): # 리뷰보기
     if 'loggedin' in session:
@@ -108,21 +101,47 @@ def add_bookmark(): # 즐겨찾기추가후 리뷰보기
             hotplace_db.commit()
         return render_template('show_review.html', rows=review)
     
-
 @app.route('/add_review/<r_name>')
 def add_review(r_name): # 리뷰
     if 'loggedin' in session:
         return render_template('add_review.html', rows=r_name)
 
 @app.route('/save_review', methods=['GET'])
-def save_review():
+def save_review(): # 리뷰 저장
     _r_name = request.args.get('r_name', "")
     _rating = request.args.get('rating', "")
     _content = request.args.get('review_content', "")
 
     # 리뷰추가
-    cur.execute("INSERT INTO review (r_name, rating, content) VALUES (%s, %s, %s)", (_r_name, _rating, _content))
+    cur.execute("INSERT INTO review (u_id, r_name, rating, content) VALUES (%s, %s, %s, %s)", (session['id'], _r_name, _rating, _content))
+    hotplace_db.commit()
     return redirect(url_for('show_review', r_name=_r_name))
+
+@app.route('/mypage')
+def show_mypage(): # 내 즐겨찾기,리뷰,회원탈퇴 보기
+    if 'loggedin' in session: # 레스토랑이름찾고, 다른테이블서 정보GET
+        cur.execute("SELECT * FROM restaurant WHERE restaurant_name in (SELECT r_name FROM bookmark WHERE u_id=%s)", session['id'])
+        mybookmark = cur.fetchall()
+        cur.execute("SELECT * FROM review WHERE u_id=%s", session['id'])
+        myreview = cur.fetchall()
+        print(mybookmark)
+        print(myreview)
+        return render_template('show_mypage.html', rows=myreview, books=mybookmark)
+
+@app.route('/delete_review/<r_name>')
+def delete_review(r_name): # 리뷰 삭제
+    if 'loggedin' in session:
+        cur.execute("DELETE FROM review WHERE u_id=%s and r_name=%s", (session['id'], r_name))
+        hotplace_db.commit()
+        return redirect(url_for('show_mypage'))
+
+@app.route('/delete_bookmark/<r_name>')
+def delete_bookmark(r_name): # 북마크 삭제
+    if 'loggedin' in session:
+        cur.execute("DELETE FROM bookmark WHERE u_id=%s and r_name=%s", (session['id'], r_name))
+        hotplace_db.commit()
+        return redirect(url_for('show_mypage'))
+
 
 if __name__=='__main__':
     app.debug=True

@@ -39,9 +39,10 @@ CREATE TABLE review (
   FOREIGN KEY (r_name) REFERENCES restaurant(restaurant_name)
 );
 
+alter table review
+	add u_id varchar(50) null first;
 
-
-
-  
-  
-  
+alter table review
+	add constraint review_users__fk
+		foreign key (u_id) references users (`id`)
+			on update cascade on delete cascade;
